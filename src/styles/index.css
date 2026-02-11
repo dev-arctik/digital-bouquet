@@ -1,0 +1,88 @@
+/* Tailwind CSS v4 — single import pulls in base, components, and utilities */
+@import "tailwindcss";
+
+/* Custom theme tokens for the Digital Bouquet design system */
+@theme {
+  --color-cream: #F0EBDA;
+  --color-disabled: #B8B8C4;
+  --color-subtitle: #999999;
+  --color-footer: #AAAAAA;
+
+  /* Pastel accent colors from Otter-inspired palette */
+  --color-leaf-green: #019B63;
+  --color-coral: #FC6E48;
+  --color-sky-blue: #8EB4E3;
+  --color-sunny: #FFB800;
+  --color-ocean-blue: #4E7BC0;
+  --color-lavender: #6B86C2;
+  --color-petal-pink: #FFC0A5;
+
+  /* Soft/tint backgrounds for cards and hover states */
+  --color-soft-green: #E8F5E9;
+  --color-soft-pink: #FFF0E8;
+  --color-soft-blue: #EBF2FC;
+  --color-soft-yellow: #FFF8E1;
+  --color-soft-lavender: #F0EEFF;
+
+  /* Warm romantic palette — primary CTA colors */
+  --color-rose: #D4907E;
+  --color-rose-dark: #C17767;
+  --color-rose-light: #F5E1DB;
+  --color-blush: #FFF5F2;
+  --color-gold: #C9A96E;
+
+  /* Neutral */
+  --color-stone-gray: #C6C6C6;
+
+  --font-mono: "Courier Prime", "Courier New", monospace;
+  --font-note: "DM Sans", sans-serif;
+  --font-logo: "Pinyon Script", cursive;
+}
+
+/* Base styles: cream background, monospace font for the entire UI */
+body {
+  background-color: var(--color-cream);
+  font-family: var(--font-mono);
+  color: #000;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Tailwind v4 auto-generates font-logo, font-note, font-mono from @theme.
+   Also generates bg-cream, text-subtitle, text-footer, bg-disabled, border-disabled etc. */
+
+/* Entrance animation — gentle fade + slide up */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Floating animation for decorative elements */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Gentle pulse for active indicators */
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out both;
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: float 4s ease-in-out 1s infinite;
+}
+
+.animate-float-slow {
+  animation: float 5s ease-in-out 0.5s infinite;
+}
