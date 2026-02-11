@@ -4,6 +4,7 @@
 
 import { useState, useRef, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ArrowLeft, Plus } from 'lucide-react';
 
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { useToast } from '../../components/Toast';
@@ -12,7 +13,6 @@ import { resetBuilder } from './builderSlice';
 import { saveBouquet } from '../garden/gardenSlice';
 import { BouquetPreview } from './BouquetPreview';
 import { ShareActions } from '../share/ShareActions';
-import { generateShareLink } from '../share/generateShareLink';
 import { UnsavedWorkModal } from './UnsavedWorkModal';
 import { CANVAS_WIDTH, CANVAS_HEIGHT } from '../../data/flowers';
 import { hasStorageRoom } from '../../utils/storage';
@@ -37,8 +37,8 @@ export const Step3: React.FC = () => {
     const updateScale = () => {
       if (wrapperRef.current) {
         const widthScale = wrapperRef.current.clientWidth / CANVAS_WIDTH;
-        // Cap height to ~60vh so the page doesn't scroll on desktop
-        const maxPreviewHeight = window.innerHeight * 0.6;
+        // Cap height to ~50vh so the page doesn't scroll on desktop
+        const maxPreviewHeight = window.innerHeight * 0.50;
         const heightScale = maxPreviewHeight / CANVAS_HEIGHT;
         setScale(Math.min(1, widthScale, heightScale));
       }
@@ -75,8 +75,6 @@ export const Step3: React.FC = () => {
       builder.canvasHeight,
     ]
   );
-
-  const shareLink = useMemo(() => generateShareLink(bouquet), [bouquet]);
 
   // Save the current bouquet to the garden (localStorage)
   const handleSaveToGarden = () => {
@@ -128,9 +126,9 @@ export const Step3: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center gap-3 animate-fade-in-up">
+    <div className="flex flex-col items-center gap-2 animate-fade-in-up">
       {/* Title */}
-      <h2 className="font-logo text-4xl sm:text-5xl text-center">
+      <h2 className="font-note text-4xl sm:text-5xl text-center font-bold">
         Preview & Share
       </h2>
 
@@ -151,46 +149,30 @@ export const Step3: React.FC = () => {
         </div>
       </div>
 
-      {/* Actions row below the preview */}
-      <div className="w-full flex flex-col items-center gap-3" style={{ maxWidth: CANVAS_WIDTH * scale }}>
-        {/* Share actions in a single row */}
-        <div className="w-full flex flex-col sm:flex-row gap-2">
-          <ShareActions
-            bouquet={bouquet}
-            previewRef={previewRef}
-            onSaveToGarden={handleSaveToGarden}
-            isSaved={isSaved}
-          />
-        </div>
-
-        {/* Shareable link */}
-        <input
-          type="text"
-          readOnly
-          value={shareLink}
-          className="w-full border border-rose-light rounded-lg bg-white font-mono text-xs px-3 py-2 overflow-hidden text-ellipsis focus:ring-rose focus:border-rose focus:outline-none"
-          onClick={(e) => (e.target as HTMLInputElement).select()}
+      {/* Actions below preview — clear visual hierarchy */}
+      <div className="w-full flex flex-col items-center gap-2" style={{ maxWidth: CANVAS_WIDTH * scale }}>
+        {/* Primary + secondary action buttons */}
+        <ShareActions
+          bouquet={bouquet}
+          previewRef={previewRef}
+          onSaveToGarden={handleSaveToGarden}
+          isSaved={isSaved}
+          onViewGarden={() => navigate('/garden')}
         />
 
-        {/* Navigation row */}
-        <div className="w-full flex flex-col sm:flex-row gap-2">
+        {/* Tertiary navigation — outlined buttons matching secondary style */}
+        <div className="flex gap-2 w-full">
           <button
             onClick={() => navigate('/build/arrange')}
-            className="flex-1 border-2 border-rose text-rose font-note text-xs font-semibold py-2.5 px-4 rounded-lg hover:bg-rose-light transition-all duration-300"
+            className="flex-1 border border-rose text-rose text-xs uppercase tracking-wider font-semibold py-2 px-4 rounded-lg font-note hover:bg-rose-light transition-all duration-200"
           >
-            BACK
+            <ArrowLeft size={14} className="inline -mt-0.5" /> Back
           </button>
           <button
             onClick={() => handleLeaveAttempt('new')}
-            className="flex-1 border-2 border-rose text-rose font-note text-xs font-semibold py-2.5 px-4 rounded-lg hover:bg-rose-light transition-all duration-300"
+            className="flex-1 border border-rose text-rose text-xs uppercase tracking-wider font-semibold py-2 px-4 rounded-lg font-note hover:bg-rose-light transition-all duration-200"
           >
-            CREATE NEW
-          </button>
-          <button
-            onClick={() => handleLeaveAttempt('garden')}
-            className="flex-1 border-2 border-rose text-rose font-note text-xs font-semibold py-2.5 px-4 rounded-lg hover:bg-rose-light transition-all duration-300"
-          >
-            GO TO GARDEN
+            <Plus size={14} className="inline -mt-0.5" /> Create New
           </button>
         </div>
       </div>

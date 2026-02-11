@@ -18,12 +18,17 @@ import {
   DEFAULT_NOTE_POSITION,
 } from '../../data/flowers';
 
+// Pick a random greenery type (excluding 'none') so bouquets look nice by default
+const greeneryTypes: GreeneryType[] = ['bush', 'monstera', 'sprigs'];
+const pickRandomGreenery = (): GreeneryType =>
+  greeneryTypes[Math.floor(Math.random() * greeneryTypes.length)] ?? 'bush';
+
 const initialState: BuilderState = {
   step: 1,
   cart: [],
   placedFlowers: [],
   note: null,
-  greenery: 'none',
+  greenery: pickRandomGreenery(),
   editingBouquetId: null,
   canvasWidth: CANVAS_WIDTH,
   canvasHeight: CANVAS_HEIGHT,
@@ -177,9 +182,9 @@ const builderSlice = createSlice({
       }));
     },
 
-    // Full reset to initial state (new bouquet)
+    // Full reset to initial state (new bouquet) with a fresh random greenery
     resetBuilder() {
-      return { ...initialState };
+      return { ...initialState, greenery: pickRandomGreenery() };
     },
 
     // Go back to step 1: reset placedFlowers, keep cart + note text

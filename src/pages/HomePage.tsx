@@ -3,6 +3,7 @@
 // "My Collection" button only appears when the garden has saved bouquets.
 
 import { useNavigate } from 'react-router-dom';
+import { Sparkles, BookOpen } from 'lucide-react';
 import { useAppSelector } from '../app/hooks';
 import { selectGardenIsEmpty } from '../features/garden/gardenSlice';
 
@@ -51,10 +52,18 @@ const HomePage: React.FC = () => {
         className="absolute top-[45%] left-[2%] w-20 opacity-25 animate-float-delayed pointer-events-none select-none rotate-12"
       />
 
-      {/* Logo — dramatic, large, romantic calligraphic font */}
-      <h1 className="font-logo text-8xl sm:text-9xl z-10 animate-fade-in-up">
+      {/* Logo — large, warm DM Sans for readability while staying elegant */}
+      <h1 className="font-note text-8xl sm:text-9xl z-10 animate-fade-in-up">
         DigiBouquet
       </h1>
+
+      {/* Subtitle — explains what the app is at a glance */}
+      <p
+        className="text-subtitle font-note text-sm z-10 animate-fade-in-up -mt-4"
+        style={{ animationDelay: '0.1s' }}
+      >
+        Your Digital Bouquet Maker
+      </p>
 
       {/* Tagline — warm, emotional, in DM Sans for a softer feel */}
       <p
@@ -64,6 +73,18 @@ const HomePage: React.FC = () => {
         Handpick flowers, arrange them with love, and share a beautiful bouquet
         with someone special.
       </p>
+
+      {/* Step preview flow — shows the 3-step process at a glance */}
+      <div
+        className="flex items-center gap-3 font-mono text-xs uppercase tracking-widest text-subtitle z-10 animate-fade-in-up"
+        style={{ animationDelay: '0.22s' }}
+      >
+        <span>Pick Flowers</span>
+        <span aria-hidden="true">&rarr;</span>
+        <span>Arrange a Bouquet</span>
+        <span aria-hidden="true">&rarr;</span>
+        <span>Share the Special Link</span>
+      </div>
 
       {/* CTA buttons — warm rose tones, rounded, inviting */}
       <div
@@ -75,7 +96,7 @@ const HomePage: React.FC = () => {
           aria-label="Start creating your bouquet"
           className="px-10 py-4 bg-rose text-white text-sm font-note font-semibold rounded-lg hover:bg-rose-dark hover:shadow-lg hover:scale-[1.02] transition-all duration-300"
         >
-          Start Creating
+          <Sparkles size={16} className="inline -mt-0.5" /> Start Creating
         </button>
 
         {/* Only visible when garden has at least 1 bouquet */}
@@ -85,7 +106,7 @@ const HomePage: React.FC = () => {
             aria-label="View my collection"
             className="px-10 py-4 border-2 border-rose text-rose text-sm font-note font-semibold rounded-lg hover:bg-rose-light transition-all duration-300"
           >
-            My Collection
+            <BookOpen size={16} className="inline -mt-0.5" /> My Collection
           </button>
         )}
       </div>

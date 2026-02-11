@@ -2,6 +2,7 @@
 // and saving to garden. Used by both Step3 and ViewerPage.
 
 import { useState } from 'react';
+import { Share2, Camera, Flower2, Eye } from 'lucide-react';
 
 import type { Bouquet } from '../../types';
 import { useToast } from '../../components/Toast';
@@ -13,6 +14,7 @@ interface ShareActionsProps {
   previewRef: React.RefObject<HTMLDivElement | null>;
   onSaveToGarden?: () => void;
   isSaved?: boolean;
+  onViewGarden?: () => void;  // navigate to garden after saving
 }
 
 export const ShareActions: React.FC<ShareActionsProps> = ({
@@ -20,6 +22,7 @@ export const ShareActions: React.FC<ShareActionsProps> = ({
   previewRef,
   onSaveToGarden,
   isSaved = false,
+  onViewGarden,
 }) => {
   const { showToast } = useToast();
   const [isExporting, setIsExporting] = useState(false);
@@ -70,42 +73,39 @@ export const ShareActions: React.FC<ShareActionsProps> = ({
   };
 
   return (
-    <div className="flex flex-col sm:flex-row gap-2 w-full">
-      {/* Primary share button — coral for attention */}
+    <div className="flex flex-col gap-2 w-full">
+      {/* Primary: share — full width, solid coral, most prominent */}
       <button
         onClick={handleShare}
-        className="flex-1 bg-coral text-white text-xs uppercase tracking-widest font-bold py-3 px-6 rounded-lg font-note font-semibold hover:bg-[#E85A35] transition-all duration-200"
+        className="w-full bg-coral text-white text-sm uppercase tracking-widest font-bold py-3 px-6 rounded-lg font-note hover:bg-[#E85A35] hover:shadow-md transition-all duration-200"
       >
-        SHARE
+        <Share2 size={16} className="inline -mt-0.5" /> Share Your Bouquet
       </button>
 
-      {/* Secondary: save as photo — rose outline */}
-      <button
-        onClick={handleSaveAsPhoto}
-        disabled={isExporting}
-        className={`flex-1 border-2 text-xs uppercase tracking-widest font-bold py-3 px-6 rounded-lg font-note font-semibold transition-all duration-200 ${
-          isExporting
-            ? 'bg-disabled text-white border-disabled cursor-not-allowed rounded-lg'
-            : 'border-rose text-rose hover:bg-rose-light'
-        }`}
-      >
-        {isExporting ? 'SAVING...' : 'SAVE AS PHOTO'}
-      </button>
-
-      {/* Secondary: save to garden — rose outline (optional, hidden if no handler) */}
-      {onSaveToGarden && (
+      {/* Secondary: save actions — side by side, smaller, outlined */}
+      <div className="flex gap-2 w-full">
         <button
-          onClick={onSaveToGarden}
-          disabled={isSaved}
-          className={`flex-1 border-2 text-xs uppercase tracking-widest font-bold py-3 px-6 rounded-lg font-note font-semibold transition-all duration-200 ${
-            isSaved
-              ? 'bg-disabled text-white border-disabled cursor-not-allowed rounded-lg'
+          onClick={handleSaveAsPhoto}
+          disabled={isExporting}
+          className={`flex-1 border text-xs uppercase tracking-wider font-semibold py-2 px-4 rounded-lg font-note transition-all duration-200 ${
+            isExporting
+              ? 'bg-disabled text-white border-disabled cursor-not-allowed'
               : 'border-rose text-rose hover:bg-rose-light'
           }`}
         >
-          {isSaved ? 'SAVED!' : 'SAVE TO GARDEN'}
+          {isExporting ? 'Saving...' : <><Camera size={14} className="inline -mt-0.5" /> Save as Photo</>}
         </button>
-      )}
+
+        {/* Save to garden — toggles to "View Garden" after saving */}
+        {onSaveToGarden && (
+          <button
+            onClick={isSaved ? onViewGarden : onSaveToGarden}
+            className="flex-1 border border-rose text-rose text-xs uppercase tracking-wider font-semibold py-2 px-4 rounded-lg font-note hover:bg-rose-light transition-all duration-200"
+          >
+            {isSaved ? <><Eye size={14} className="inline -mt-0.5" /> View Garden</> : <><Flower2 size={14} className="inline -mt-0.5" /> Save to Garden</>}
+          </button>
+        )}
+      </div>
     </div>
   );
 };

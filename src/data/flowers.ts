@@ -50,8 +50,17 @@ export const CANVAS_HEIGHT = 600;
 export const MAX_FLOWERS = 6;
 
 // Note constraints
-export const MAX_NOTE_WORDS = 100;
-export const NOTE_WIDTH = 200;
+export const MAX_NOTE_WORDS = 50;
+export const NOTE_WIDTH = 200; // base width (short notes)
+const NOTE_MAX_WIDTH = 280;    // cap (long notes)
+
+// Dynamic note width — grows sublinearly via sqrt so longer notes
+// get a bit wider without dominating the canvas
+export function getNoteWidth(text: string): number {
+  const wordCount = text.split(/\s+/).filter(Boolean).length;
+  const extra = Math.sqrt(wordCount) * 10;
+  return Math.min(NOTE_WIDTH + extra, NOTE_MAX_WIDTH);
+}
 
 // Default note position: bottom-center, avoids greenery overlap
 export const DEFAULT_NOTE_POSITION = { x: 300, y: 480 } as const;

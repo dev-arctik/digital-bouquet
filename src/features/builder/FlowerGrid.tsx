@@ -15,7 +15,7 @@ export const FlowerGrid: React.FC = () => {
 
   return (
     <div
-      className="grid grid-cols-3 gap-5"
+      className="grid grid-cols-3 gap-3"
       role="group"
       aria-label="Flower selection grid"
     >

@@ -10,7 +10,7 @@ import {
   CANVAS_WIDTH,
   CANVAS_HEIGHT,
   FLOWER_SIZE,
-  NOTE_WIDTH,
+  getNoteWidth,
 } from '../../data/flowers';
 
 interface BouquetPreviewProps {
@@ -40,12 +40,13 @@ export const BouquetPreview = forwardRef<HTMLDivElement, BouquetPreviewProps>(
     return (
       <div
         ref={ref}
-        className="bg-cream"
+        className="bg-white"
         style={{
           width: CANVAS_WIDTH,
           height: CANVAS_HEIGHT,
           position: 'relative',
           overflow: 'hidden',
+          backgroundColor: '#FFFFFF',
         }}
       >
         {/* Layer 1: Greenery background */}
@@ -88,19 +89,20 @@ export const BouquetPreview = forwardRef<HTMLDivElement, BouquetPreviewProps>(
           );
         })}
 
-        {/* Layer 3: Static note card (above all flowers) */}
+        {/* Layer 3: Static note card — matches NoteCard romantic styling */}
         {showNote && note && (
           <div
-            className="bg-white border-2 border-rose-dark rounded-lg shadow-sm p-3"
+            className="bg-[#FFF8F0] border-2 border-[#E8C4B8] rounded-xl shadow-lg p-4"
             style={{
               position: 'absolute',
               left: note.x,
               top: note.y,
-              width: NOTE_WIDTH,
+              width: getNoteWidth(note.text),
               zIndex: maxFlowerZ + 1,
+              transform: 'rotate(-1.5deg)',
             }}
           >
-            <p className="font-note text-sm leading-relaxed break-words whitespace-pre-wrap m-0">
+            <p className="font-note text-base leading-relaxed break-words whitespace-pre-wrap m-0 text-[#5C4033] italic text-justify">
               {note.text}
             </p>
           </div>

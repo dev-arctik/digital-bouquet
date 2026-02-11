@@ -3,6 +3,7 @@
 // Garden icon on the right (links to /garden, only shown if garden has bouquets).
 
 import { Outlet, Link } from 'react-router-dom';
+import { Sprout } from 'lucide-react';
 import { useAppSelector } from '../app/hooks';
 import { selectGardenIsEmpty } from '../features/garden/gardenSlice';
 
@@ -11,8 +12,8 @@ export const Layout: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Navbar — warm rose-light border + subtle shadow for depth */}
-      <nav className="flex items-center justify-between px-6 py-4 border-b border-rose-light shadow-sm">
+      {/* Navbar — warm rose-light border, no shadow for a flat look */}
+      <nav className="flex items-center justify-between px-6 py-4 border-b border-rose-light">
         <Link to="/" className="font-logo text-4xl text-rose-dark no-underline">
           DigiBouquet
         </Link>
@@ -24,7 +25,7 @@ export const Layout: React.FC = () => {
             className="uppercase tracking-widest text-xs font-mono text-rose no-underline border-2 border-rose px-3 py-1.5 rounded-lg hover:bg-rose-light transition-colors"
             aria-label="My Garden"
           >
-            My Garden
+            <Sprout size={14} className="inline -mt-0.5" /> My Garden
           </Link>
         )}
       </nav>

@@ -1,11 +1,17 @@
 // Sidebar cart for step 1 — shows selected flowers with +/- controls.
-// Displays each flower type's count and a total counter at the bottom.
+// Displays each flower type's count, a total counter, and the NEXT button.
 
+import { ArrowRight } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { incrementCartItem, decrementCartItem } from './builderSlice';
 import { FLOWERS, MAX_FLOWERS } from '../../data/flowers';
 
-export const Cart: React.FC = () => {
+interface CartProps {
+  onNext: () => void;
+  hasFlowers: boolean;
+}
+
+export const Cart: React.FC<CartProps> = ({ onNext, hasFlowers }) => {
   const dispatch = useAppDispatch();
   const cart = useAppSelector((state) => state.builder.cart);
 
@@ -14,7 +20,7 @@ export const Cart: React.FC = () => {
 
   return (
     <div className="flex flex-col gap-4" aria-label="Your bouquet cart">
-      <h3 className="font-logo text-2xl text-rose-dark">Your Bouquet</h3>
+      <h3 className="font-note text-2xl text-rose-dark">Your Bouquet</h3>
 
       {/* Empty state */}
       {cart.length === 0 && (
@@ -24,7 +30,7 @@ export const Cart: React.FC = () => {
       )}
 
       {/* Cart item list */}
-      <ul className="flex flex-col gap-3">
+      <ul className="flex flex-col gap-1">
         {cart.map((item) => {
           // Look up display name from the catalog
           const meta = FLOWERS.find((f) => f.type === item.type);
@@ -79,6 +85,19 @@ export const Cart: React.FC = () => {
           / {MAX_FLOWERS} Flowers
         </span>
       </div>
+
+      {/* NEXT button — integrated into cart so user doesn't have to look elsewhere */}
+      <button
+        onClick={onNext}
+        disabled={!hasFlowers}
+        className={`w-full text-xs uppercase tracking-widest font-bold px-6 py-3 rounded-lg transition-all duration-200 ${
+          hasFlowers
+            ? 'bg-rose text-white hover:bg-rose-dark'
+            : 'bg-disabled text-white cursor-not-allowed'
+        }`}
+      >
+        NEXT <ArrowRight size={14} className="inline -mt-0.5" />
+      </button>
     </div>
   );
 };

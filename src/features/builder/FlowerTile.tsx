@@ -24,7 +24,7 @@ export const FlowerTile: React.FC<FlowerTileProps> = ({ flower, disabled }) => {
       onClick={handleClick}
       disabled={disabled}
       aria-label={`Add ${flower.name} to bouquet`}
-      className={`flex flex-col items-center gap-3 bg-white border border-rose-light rounded-xl p-5 transition-all duration-300 ${
+      className={`flex flex-col items-center gap-2 bg-white border border-rose-light rounded-xl p-3 transition-all duration-300 ${
         disabled
           ? 'opacity-40 cursor-not-allowed'
           : 'cursor-pointer hover:shadow-lg hover:scale-[1.04] hover:-translate-y-1'
@@ -33,7 +33,7 @@ export const FlowerTile: React.FC<FlowerTileProps> = ({ flower, disabled }) => {
       <img
         src={flower.asset}
         alt={flower.name}
-        className="w-24 h-24 object-contain"
+        className="w-16 h-16 object-contain"
       />
       <span className="text-sm font-note font-medium text-rose-dark">
         {flower.name}

@@ -4,6 +4,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Pencil, Share2, Camera, Trash2 } from 'lucide-react';
 import { useAppDispatch } from '../../app/hooks';
 import { useToast } from '../../components/Toast';
 import { Modal } from '../../components/Modal';
@@ -186,7 +187,18 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({
                 handleEdit();
               }}
             >
-              Edit
+              <Pencil size={14} className="inline -mt-0.5" /> Edit
+            </button>
+
+            {/* Secondary: Share Link (before photo — sharing is the more common action) */}
+            <button
+              className="w-full py-2.5 border-2 border-rose text-rose font-note text-sm font-semibold rounded-lg hover:bg-rose-light transition-all duration-300"
+              onClick={() => {
+                resetDeleteConfirm();
+                handleShareLink();
+              }}
+            >
+              <Share2 size={14} className="inline -mt-0.5" /> Share Link
             </button>
 
             {/* Secondary: Save as Photo */}
@@ -202,18 +214,7 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({
               }}
               disabled={isSaving}
             >
-              {isSaving ? 'Saving...' : 'Save as Photo'}
-            </button>
-
-            {/* Secondary: Share Link */}
-            <button
-              className="w-full py-2.5 border-2 border-rose text-rose font-note text-sm font-semibold rounded-lg hover:bg-rose-light transition-all duration-300"
-              onClick={() => {
-                resetDeleteConfirm();
-                handleShareLink();
-              }}
-            >
-              Share Link
+              {isSaving ? 'Saving...' : <><Camera size={14} className="inline -mt-0.5" /> Save as Photo</>}
             </button>
 
             {/* Tertiary: Delete — two-click confirmation, coral for destructive action */}
@@ -221,7 +222,7 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({
               className="w-full py-2 text-coral font-note text-sm font-semibold underline hover:text-[#E85A35] transition-all duration-300"
               onClick={handleDelete}
             >
-              {isConfirmingDelete ? 'Confirm Delete?' : 'Delete'}
+              <Trash2 size={14} className="inline -mt-0.5" /> {isConfirmingDelete ? 'Confirm Delete?' : 'Delete'}
             </button>
           </div>
         </div>

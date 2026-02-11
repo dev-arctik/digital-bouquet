@@ -14,7 +14,7 @@ import {
   CANVAS_WIDTH,
   CANVAS_HEIGHT,
   FLOWER_SIZE,
-  NOTE_WIDTH,
+  getNoteWidth,
 } from '../../data/flowers';
 
 // Greenery image dimensions and offset on the canvas
@@ -38,11 +38,13 @@ export const BouquetCanvas: React.FC = () => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
 
+  // Scale canvas to fit both available width AND viewport height
   useEffect(() => {
     const updateScale = () => {
       if (wrapperRef.current) {
         const wrapperWidth = wrapperRef.current.clientWidth;
-        setScale(Math.min(1, wrapperWidth / CANVAS_WIDTH));
+        const maxHeight = window.innerHeight * 0.50;
+        setScale(Math.min(1, wrapperWidth / CANVAS_WIDTH, maxHeight / CANVAS_HEIGHT));
       }
     };
     updateScale();
@@ -72,7 +74,8 @@ export const BouquetCanvas: React.FC = () => {
       // Use a minimum height estimate for Y clamping (note height varies with text)
       if (dragId === 'note-card' && note) {
         const NOTE_MIN_HEIGHT = 60;
-        const newX = clamp(note.x + delta.x, 0, CANVAS_WIDTH - NOTE_WIDTH);
+        const noteWidth = getNoteWidth(note.text);
+        const newX = clamp(note.x + delta.x, 0, CANVAS_WIDTH - noteWidth);
         const newY = clamp(note.y + delta.y, 0, CANVAS_HEIGHT - NOTE_MIN_HEIGHT);
         dispatch(updateNotePosition({ x: newX, y: newY }));
         return;
@@ -100,16 +103,16 @@ export const BouquetCanvas: React.FC = () => {
   return (
     <div
       ref={wrapperRef}
-      style={{ width: '100%', height: CANVAS_HEIGHT * scale + 4 }}
+      style={{ width: '100%', height: CANVAS_HEIGHT * scale + 4, display: 'flex', justifyContent: 'center' }}
     >
       <DndContext onDragEnd={handleDragEnd}>
         <div
-          className="relative bg-cream overflow-hidden shadow-lg rounded-xl border border-rose-light"
+          className="relative bg-white overflow-hidden shadow-lg rounded-xl border border-rose-light"
           style={{
             width: CANVAS_WIDTH,
             height: CANVAS_HEIGHT,
             transform: `scale(${scale})`,
-            transformOrigin: 'top left',
+            transformOrigin: 'top center',
           }}
           onClick={handleCanvasClick}
         >

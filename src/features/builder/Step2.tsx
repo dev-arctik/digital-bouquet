@@ -4,6 +4,7 @@
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { StickyNote, PenLine } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { setPlacedFlowers, goBackToStep1 } from './builderSlice';
 import { StepNavigation } from '../../components/StepNavigation';
@@ -38,30 +39,28 @@ export const Step2: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center gap-6 animate-fade-in-up">
-      {/* Title */}
-      <h2 className="font-logo text-4xl sm:text-5xl text-center">
+    <div className="flex flex-col items-center gap-3 animate-fade-in-up">
+      {/* Title + instruction */}
+      <h2 className="font-note text-4xl sm:text-5xl text-center font-bold">
         Arrange Your Bouquet
       </h2>
-
-      {/* Instruction hint */}
       <p className="font-note text-sm text-subtitle">
         Drag the flowers to arrange them as you want
       </p>
 
-      {/* Greenery dropdown */}
-      <GreenerySelector />
-
       {/* Drag-and-drop canvas */}
       <BouquetCanvas />
 
-      {/* Add/Edit Note button */}
-      <button
-        onClick={() => setIsNoteModalOpen(true)}
-        className="px-6 py-3 border-2 border-rose text-rose rounded-lg font-note text-sm font-semibold hover:bg-rose-light transition-all duration-300"
-      >
-        {note ? 'Edit Note' : 'Add Note'}
-      </button>
+      {/* Greenery dropdown + Note button — side by side below canvas */}
+      <div className="flex items-center gap-3">
+        <GreenerySelector />
+        <button
+          onClick={() => setIsNoteModalOpen(true)}
+          className="px-6 py-2.5 border-2 border-rose text-rose rounded-lg font-note text-sm font-semibold hover:bg-rose-light transition-all duration-300"
+        >
+          {note ? <><PenLine size={14} className="inline -mt-0.5" /> Edit Your Note</> : <><StickyNote size={14} className="inline -mt-0.5" /> Add a Custom Note</>}
+        </button>
+      </div>
 
       {/* Note editor modal */}
       <NoteModal isOpen={isNoteModalOpen} onClose={() => setIsNoteModalOpen(false)} />

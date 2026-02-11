@@ -1,8 +1,9 @@
 // Reusable modal overlay component.
-// Backdrop blur, centered content, close on Escape or click-outside.
-// Soft rounded corners, rose-light border, rose accent line at top.
+// Renders via portal to document.body so it covers the ENTIRE viewport
+// including the navbar. Light backdrop blur with soft overlay.
 
 import { useEffect, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 
 interface ModalProps {
   isOpen: boolean;
@@ -48,9 +49,10 @@ export const Modal: React.FC<ModalProps> = ({
 
   if (!isOpen) return null;
 
-  return (
+  // Portal to body so the overlay covers everything (navbar included)
+  return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/30 backdrop-blur-sm"
       onClick={handleBackdropClick}
     >
       <div
@@ -83,6 +85,7 @@ export const Modal: React.FC<ModalProps> = ({
           {children}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };

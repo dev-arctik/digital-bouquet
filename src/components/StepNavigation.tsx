@@ -2,6 +2,8 @@
 // Primary button style for NEXT (solid rose), secondary (outlined rose) for BACK.
 // All buttons: rounded-lg, monospace uppercase, letter-spacing.
 
+import { ArrowLeft, ArrowRight } from 'lucide-react';
+
 interface StepNavigationProps {
   onBack?: () => void;
   onNext?: () => void;
@@ -20,7 +22,7 @@ export const StepNavigation: React.FC<StepNavigationProps> = ({
   backLabel = 'BACK',
 }) => {
   return (
-    <div className="flex items-center justify-between gap-4 mt-6">
+    <div className="flex items-center justify-between gap-4 mt-3">
       {/* BACK button — secondary style (outlined) */}
       {onBack ? (
         <button
@@ -32,7 +34,7 @@ export const StepNavigation: React.FC<StepNavigationProps> = ({
               : 'border-rose text-rose hover:bg-rose-light'
           }`}
         >
-          {backLabel}
+          <ArrowLeft size={14} className="inline -mt-0.5" /> {backLabel}
         </button>
       ) : (
         // Spacer so NEXT stays right-aligned when there is no BACK button
@@ -50,7 +52,7 @@ export const StepNavigation: React.FC<StepNavigationProps> = ({
               : 'bg-rose text-white hover:bg-rose-dark'
           }`}
         >
-          {nextLabel}
+          {nextLabel} <ArrowRight size={14} className="inline -mt-0.5" />
         </button>
       )}
     </div>

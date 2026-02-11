@@ -4,7 +4,7 @@
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import type { Note } from '../../types';
-import { NOTE_WIDTH } from '../../data/flowers';
+import { getNoteWidth } from '../../data/flowers';
 
 interface NoteCardProps {
   note: Note;
@@ -18,26 +18,29 @@ export const NoteCard: React.FC<NoteCardProps> = ({ note, zIndex }) => {
     id: DRAG_ID,
   });
 
-  // Combine base position with drag offset during active drag
+  // Combine base position with drag offset during active drag.
+  // Slight rotation gives the card a hand-placed, organic feel.
+  const baseRotate = 'rotate(-1.5deg)';
+  const dragTranslate = transform ? CSS.Translate.toString(transform) : '';
   const style: React.CSSProperties = {
     position: 'absolute',
     left: note.x,
     top: note.y,
-    width: NOTE_WIDTH,
+    width: getNoteWidth(note.text),
     zIndex,
-    transform: transform ? CSS.Translate.toString(transform) : undefined,
+    transform: dragTranslate ? `${dragTranslate} ${baseRotate}` : baseRotate,
   };
 
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className="bg-white border-2 border-rose rounded-xl shadow-md p-3 cursor-grab active:cursor-grabbing"
+      className="bg-[#FFF8F0] border-2 border-[#E8C4B8] rounded-xl shadow-lg p-4 cursor-grab active:cursor-grabbing"
       {...listeners}
       {...attributes}
     >
-      {/* Note text in DM Sans — normal case, not uppercase */}
-      <p className="font-note text-sm leading-relaxed break-words whitespace-pre-wrap m-0">
+      {/* Note text — italic DM Sans in warm brown ink for a handwritten feel */}
+      <p className="font-note text-base leading-relaxed break-words whitespace-pre-wrap m-0 text-[#5C4033] italic text-justify">
         {note.text}
       </p>
     </div>
