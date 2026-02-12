@@ -32,6 +32,7 @@ const initialState: BuilderState = {
   editingBouquetId: null,
   canvasWidth: CANVAS_WIDTH,
   canvasHeight: CANVAS_HEIGHT,
+  isSavedToGarden: false,
 };
 
 // Helper to count total flowers across all cart items
@@ -187,6 +188,11 @@ const builderSlice = createSlice({
       return { ...initialState, greenery: pickRandomGreenery() };
     },
 
+    // Mark bouquet as saved — suppresses beforeunload on refresh
+    markSaved(state) {
+      state.isSavedToGarden = true;
+    },
+
     // Go back to step 1: reset placedFlowers, keep cart + note text
     // Note position resets to default on re-entry to step 2
     goBackToStep1(state) {
@@ -218,6 +224,7 @@ export const {
   loadBouquetForEditing,
   resetBuilder,
   goBackToStep1,
+  markSaved,
 } = builderSlice.actions;
 
 export default builderSlice.reducer;

@@ -3,13 +3,13 @@
 // Handles unsaved-work warnings when navigating away.
 
 import { useState, useRef, useMemo, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, Plus } from 'lucide-react';
 
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { useToast } from '../../components/Toast';
 import type { Bouquet } from '../../types';
-import { resetBuilder } from './builderSlice';
+import { resetBuilder, markSaved } from './builderSlice';
 import { saveBouquet } from '../garden/gardenSlice';
 import { BouquetPreview } from './BouquetPreview';
 import { ShareActions } from '../share/ShareActions';
@@ -23,40 +23,64 @@ type LeaveTarget = 'new' | 'garden' | null;
 export const Step3: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { showToast } = useToast();
   const builder = useAppSelector((state) => state.builder);
+  const gardenBouquets = useAppSelector((state) => state.garden.bouquets);
 
   const previewRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const [isSaved, setIsSaved] = useState(false);
+  const isSavedInRedux = useAppSelector((state) => state.builder.isSavedToGarden);
   const [leaveTarget, setLeaveTarget] = useState<LeaveTarget>(null);
-  const [scale, setScale] = useState(1);
+  // Safe initial scale so 800px canvas doesn't inflate layout on first render
+  const [scale, setScale] = useState(() =>
+    typeof window !== 'undefined' ? Math.min(1, (window.innerWidth - 32) / CANVAS_WIDTH) : 1
+  );
+
+  // On refresh after saving, builder state is gone but bouquet is in garden.
+  // If URL has ?saved=<id>, recover the bouquet from garden instead of redirecting home.
+  const savedId = searchParams.get('saved');
+  const gardenBouquet = savedId ? gardenBouquets.find((b) => b.id === savedId) : null;
+
+  // Recovered from garden = already saved; otherwise check Redux flag
+  const isSaved = isSavedInRedux || !!gardenBouquet;
+
+  // Redirect to home only if no flowers AND no recoverable saved bouquet
+  const hasNoFlowers = builder.placedFlowers.length === 0 && !gardenBouquet;
+  useEffect(() => {
+    if (hasNoFlowers) {
+      navigate('/', { replace: true });
+    }
+  }, [hasNoFlowers, navigate]);
 
   // Responsive scaling — fit preview within available width AND viewport height
   useEffect(() => {
     const updateScale = () => {
-      if (wrapperRef.current) {
-        const widthScale = wrapperRef.current.clientWidth / CANVAS_WIDTH;
-        // Cap height to ~50vh so the page doesn't scroll on desktop
-        const maxPreviewHeight = window.innerHeight * 0.50;
-        const heightScale = maxPreviewHeight / CANVAS_HEIGHT;
-        setScale(Math.min(1, widthScale, heightScale));
-      }
+      const maxAvailableWidth = window.innerWidth - 32;
+      const wrapperWidth = Math.min(
+        wrapperRef.current?.clientWidth ?? maxAvailableWidth,
+        maxAvailableWidth
+      );
+      const maxPreviewHeight = window.innerHeight * 0.50;
+      setScale(Math.min(1, wrapperWidth / CANVAS_WIDTH, maxPreviewHeight / CANVAS_HEIGHT));
     };
     updateScale();
     window.addEventListener('resize', updateScale);
     return () => window.removeEventListener('resize', updateScale);
   }, []);
 
-  // Stable ID: generated once per mount, so BACK+NEXT doesn't create duplicates
+  // Stable ID: generated once per mount, so BACK+NEXT doesn't create duplicates.
+  // Must be above the early return to satisfy React's hook ordering rules.
   const [bouquetId] = useState(
-    () => builder.editingBouquetId ?? crypto.randomUUID()
+    () => gardenBouquet?.id ?? builder.editingBouquetId ?? crypto.randomUUID()
   );
-  const [createdAt] = useState(() => new Date().toISOString());
+  const [createdAt] = useState(
+    () => gardenBouquet?.createdAt ?? new Date().toISOString()
+  );
 
-  // Build the Bouquet object from Redux builder state
+  // Build the Bouquet object — use garden bouquet if recovering from refresh, else builder state
   const bouquet: Bouquet = useMemo(
-    () => ({
+    () => gardenBouquet ?? {
       id: bouquetId,
       flowers: builder.placedFlowers,
       note: builder.note,
@@ -64,8 +88,9 @@ export const Step3: React.FC = () => {
       canvasWidth: builder.canvasWidth,
       canvasHeight: builder.canvasHeight,
       createdAt,
-    }),
+    },
     [
+      gardenBouquet,
       bouquetId,
       createdAt,
       builder.placedFlowers,
@@ -76,6 +101,9 @@ export const Step3: React.FC = () => {
     ]
   );
 
+  // Don't render anything while redirecting — placed after all hooks
+  if (hasNoFlowers) return null;
+
   // Save the current bouquet to the garden (localStorage)
   const handleSaveToGarden = () => {
     if (!hasStorageRoom()) {
@@ -83,7 +111,9 @@ export const Step3: React.FC = () => {
       return;
     }
     dispatch(saveBouquet(bouquet));
-    setIsSaved(true);
+    dispatch(markSaved());
+    // Persist bouquet ID in URL so refresh can recover from garden
+    setSearchParams({ saved: bouquet.id }, { replace: true });
     showToast('BOUQUET SAVED TO GARDEN!', 'saved');
   };
 
@@ -126,14 +156,14 @@ export const Step3: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center gap-2 animate-fade-in-up">
+    <div className="flex-1 flex flex-col items-center justify-center gap-2 animate-fade-in-up w-full overflow-hidden">
       {/* Title */}
-      <h2 className="font-note text-4xl sm:text-5xl text-center font-bold">
+      <h2 className="font-note text-2xl sm:text-4xl md:text-5xl text-center font-bold px-2">
         Preview & Share
       </h2>
 
       {/* Centered bouquet preview */}
-      <div ref={wrapperRef} className="w-full flex justify-center">
+      <div ref={wrapperRef} className="w-full flex justify-center overflow-hidden">
         <div
           className="shadow-lg rounded-xl overflow-hidden border border-rose-light"
           style={{ width: CANVAS_WIDTH * scale, height: CANVAS_HEIGHT * scale }}

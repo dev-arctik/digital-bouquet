@@ -1,8 +1,9 @@
 // BouquetCard — thumbnail card for a single garden bouquet.
 // Uses IntersectionObserver to lazily render the BouquetPreview only
 // when the card scrolls into view, improving performance for large gardens.
+// Width is responsive — fills its grid cell, scale computed dynamically.
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import type { Bouquet } from '../../types';
 import { BouquetPreview } from '../builder/BouquetPreview';
 import { CANVAS_WIDTH, CANVAS_HEIGHT } from '../../data/flowers';
@@ -12,10 +13,8 @@ interface BouquetCardProps {
   onClick: () => void;
 }
 
-// Scale factor to shrink the 800x600 canvas into a card-sized thumbnail
-const THUMBNAIL_SCALE = 0.25;
-const THUMBNAIL_WIDTH = CANVAS_WIDTH * THUMBNAIL_SCALE;
-const THUMBNAIL_HEIGHT = CANVAS_HEIGHT * THUMBNAIL_SCALE;
+// Canvas aspect ratio — height = width * ASPECT
+const ASPECT = CANVAS_HEIGHT / CANVAS_WIDTH;
 
 export const BouquetCard: React.FC<BouquetCardProps> = ({
   bouquet,
@@ -24,6 +23,25 @@ export const BouquetCard: React.FC<BouquetCardProps> = ({
   const cardRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  // Track the card's actual width so we can compute scale dynamically
+  const [cardWidth, setCardWidth] = useState(0);
+
+  const scale = cardWidth > 0 ? cardWidth / CANVAS_WIDTH : 0;
+  const cardHeight = cardWidth * ASPECT;
+
+  // Measure card width on mount + resize via ResizeObserver
+  const measureWidth = useCallback(() => {
+    if (cardRef.current) {
+      setCardWidth(cardRef.current.offsetWidth);
+    }
+  }, []);
+
+  useEffect(() => {
+    measureWidth();
+    const observer = new ResizeObserver(measureWidth);
+    if (cardRef.current) observer.observe(cardRef.current);
+    return () => observer.disconnect();
+  }, [measureWidth]);
 
   // Lazy render: only mount BouquetPreview once the card enters the viewport
   useEffect(() => {
@@ -44,20 +62,18 @@ export const BouquetCard: React.FC<BouquetCardProps> = ({
   return (
     <div
       ref={cardRef}
-      className="border border-rose-light rounded-xl cursor-pointer relative overflow-hidden hover:shadow-xl hover:scale-[1.03] hover:-translate-y-1 transition-all duration-300"
-      style={{ width: THUMBNAIL_WIDTH, height: THUMBNAIL_HEIGHT }}
+      className="w-full border border-rose-light rounded-xl cursor-pointer relative overflow-hidden hover:shadow-xl hover:scale-[1.03] hover:-translate-y-1 transition-all duration-300"
+      style={{ height: cardHeight || 'auto' }}
       onClick={onClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {isVisible ? (
-        // Scaled-down BouquetPreview — render at full size, shrink with CSS transform
-        <div
-          style={{ width: THUMBNAIL_WIDTH, height: THUMBNAIL_HEIGHT }}
-        >
+      {isVisible && scale > 0 ? (
+        // Scaled-down BouquetPreview — render at full 800x600, shrink with CSS transform
+        <div style={{ width: cardWidth, height: cardHeight, overflow: 'hidden' }}>
           <div
             style={{
-              transform: `scale(${THUMBNAIL_SCALE})`,
+              transform: `scale(${scale})`,
               transformOrigin: 'top left',
               width: CANVAS_WIDTH,
               height: CANVAS_HEIGHT,
@@ -67,15 +83,14 @@ export const BouquetCard: React.FC<BouquetCardProps> = ({
               flowers={bouquet.flowers}
               note={bouquet.note}
               greenery={bouquet.greenery}
-              showNote={false}
             />
           </div>
         </div>
       ) : (
         // Placeholder shown before the card enters the viewport
         <div
-          className="bg-cream"
-          style={{ width: THUMBNAIL_WIDTH, height: THUMBNAIL_HEIGHT }}
+          className="bg-cream w-full"
+          style={{ height: cardHeight || 200 }}
         />
       )}
 

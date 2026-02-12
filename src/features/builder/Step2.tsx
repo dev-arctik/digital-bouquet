@@ -22,12 +22,23 @@ export const Step2: React.FC = () => {
 
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
 
+  // Redirect to home if no flowers were picked (direct URL access)
+  const hasNoFlowers = cart.length === 0 && placedFlowers.length === 0;
+  useEffect(() => {
+    if (hasNoFlowers) {
+      navigate('/', { replace: true });
+    }
+  }, [hasNoFlowers, navigate]);
+
   // Generate random placements on first entry (empty placedFlowers)
   useEffect(() => {
     if (placedFlowers.length === 0 && cart.length > 0) {
       dispatch(setPlacedFlowers(generatePlacements(cart)));
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Don't render anything while redirecting — avoids errors from empty state
+  if (hasNoFlowers) return null;
 
   const handleBack = () => {
     dispatch(goBackToStep1());
@@ -39,20 +50,20 @@ export const Step2: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center gap-3 animate-fade-in-up">
+    <div className="flex-1 flex flex-col items-center justify-center gap-3 animate-fade-in-up w-full overflow-hidden">
       {/* Title + instruction */}
-      <h2 className="font-note text-4xl sm:text-5xl text-center font-bold">
+      <h2 className="font-note text-2xl sm:text-4xl md:text-5xl text-center font-bold px-2">
         Arrange Your Bouquet
       </h2>
-      <p className="font-note text-sm text-subtitle">
+      <p className="font-note text-sm text-subtitle text-center px-2">
         Drag the flowers to arrange them as you want
       </p>
 
       {/* Drag-and-drop canvas */}
       <BouquetCanvas />
 
-      {/* Greenery dropdown + Note button — side by side below canvas */}
-      <div className="flex items-center gap-3">
+      {/* Greenery dropdown + Note button — wrap on mobile */}
+      <div className="flex flex-wrap items-center justify-center gap-3 px-2">
         <GreenerySelector />
         <button
           onClick={() => setIsNoteModalOpen(true)}

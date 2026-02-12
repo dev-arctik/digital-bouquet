@@ -19,41 +19,41 @@ const HomePage: React.FC = () => {
   const gardenIsEmpty = useAppSelector(selectGardenIsEmpty);
 
   return (
-    <div className="relative overflow-hidden flex flex-col items-center justify-center min-h-[80vh] text-center px-6 gap-8">
-      {/* Scattered decorative flowers — floating animation, low opacity, behind content */}
+    <div className="relative overflow-hidden flex-1 flex flex-col items-center justify-center text-center px-6 gap-8">
+      {/* Scattered decorative flowers — hidden on mobile to avoid overlapping CTA buttons */}
       <img
         src={roseImg}
         alt=""
         aria-hidden="true"
-        className="absolute top-[8%] left-[5%] w-28 opacity-40 animate-float pointer-events-none select-none"
+        className="hidden sm:block absolute top-[8%] left-[5%] w-28 opacity-40 animate-float pointer-events-none select-none"
       />
       <img
         src={tulipImg}
         alt=""
         aria-hidden="true"
-        className="absolute top-[15%] right-[8%] w-24 opacity-35 animate-float-delayed pointer-events-none select-none -rotate-12"
+        className="hidden sm:block absolute top-[15%] right-[8%] w-24 opacity-35 animate-float-delayed pointer-events-none select-none -rotate-12"
       />
       <img
         src={peonyImg}
         alt=""
         aria-hidden="true"
-        className="absolute bottom-[12%] left-[8%] w-32 opacity-40 animate-float-slow pointer-events-none select-none rotate-6"
+        className="hidden sm:block absolute bottom-[12%] left-[8%] w-32 opacity-40 animate-float-slow pointer-events-none select-none rotate-6"
       />
       <img
         src={daisyImg}
         alt=""
         aria-hidden="true"
-        className="absolute bottom-[20%] right-[5%] w-24 opacity-35 animate-float pointer-events-none select-none"
+        className="hidden sm:block absolute bottom-[20%] right-[5%] w-24 opacity-35 animate-float pointer-events-none select-none"
       />
       <img
         src={orchidImg}
         alt=""
         aria-hidden="true"
-        className="absolute top-[45%] left-[2%] w-20 opacity-25 animate-float-delayed pointer-events-none select-none rotate-12"
+        className="hidden sm:block absolute top-[45%] left-[2%] w-20 opacity-25 animate-float-delayed pointer-events-none select-none rotate-12"
       />
 
-      {/* Logo — large, warm DM Sans for readability while staying elegant */}
-      <h1 className="font-note text-8xl sm:text-9xl z-10 animate-fade-in-up">
+      {/* Logo — responsive sizing so it doesn't overflow on mobile */}
+      <h1 className="font-note text-5xl sm:text-7xl md:text-8xl lg:text-9xl z-10 animate-fade-in-up">
         DigiBouquet
       </h1>
 
@@ -74,16 +74,16 @@ const HomePage: React.FC = () => {
         with someone special.
       </p>
 
-      {/* Step preview flow — shows the 3-step process at a glance */}
+      {/* Step preview flow — vertical on mobile, horizontal on larger screens */}
       <div
-        className="flex items-center gap-3 font-mono text-xs uppercase tracking-widest text-subtitle z-10 animate-fade-in-up"
+        className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 font-mono text-xs uppercase tracking-widest text-subtitle z-10 animate-fade-in-up"
         style={{ animationDelay: '0.22s' }}
       >
-        <span>Pick Flowers</span>
-        <span aria-hidden="true">&rarr;</span>
-        <span>Arrange a Bouquet</span>
-        <span aria-hidden="true">&rarr;</span>
-        <span>Share the Special Link</span>
+        <span>1. Pick Flowers</span>
+        <span aria-hidden="true" className="hidden sm:inline">&rarr;</span>
+        <span>2. Arrange a Bouquet</span>
+        <span aria-hidden="true" className="hidden sm:inline">&rarr;</span>
+        <span>3. Share the Link</span>
       </div>
 
       {/* CTA buttons — warm rose tones, rounded, inviting */}

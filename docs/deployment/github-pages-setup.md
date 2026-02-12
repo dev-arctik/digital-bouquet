@@ -276,81 +276,16 @@ With the fix:
 
 **File**: `.github/workflows/deploy.yml`
 
-The deployment is fully automated via GitHub Actions. Every push to `main` triggers a build and deploy.
+The deployment is fully automated via GitHub Actions with a 3-job pipeline: **check** (lint + typecheck + test) → **build** → **deploy**. Only code that passes all checks reaches production.
 
-```yaml
-name: Deploy to GitHub Pages
-
-on:
-  push:
-    branches: [main]
-
-  # allow manual trigger from Actions tab
-  workflow_dispatch:
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-# only one deployment at a time — cancel in-progress if a new push arrives
-concurrency:
-  group: pages
-  cancel-in-progress: true
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build
-        run: npm run build
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: dist
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
-```
-
-### Workflow Stages
-
-1. **Checkout**: Clone the repository code
-2. **Setup Node**: Install Node.js v20 and cache npm packages
-3. **Install dependencies**: Run `npm ci` (clean install, ensures reproducibility)
-4. **Build**: Run `npm run build` (compiles TypeScript, optimizes assets, generates `dist/`)
-5. **Setup Pages**: Configures GitHub Pages settings
-6. **Upload artifact**: Uploads `dist/` as a build artifact
-7. **Deploy**: Deploys the artifact to GitHub Pages
+For the full CI/CD pipeline documentation — including test infrastructure, Vitest configuration, coverage reports, and troubleshooting — see **[ci-cd-pipeline.md](./ci-cd-pipeline.md)**.
 
 ### Deployment Lifecycle
 
-- **Trigger**: Any push to `main` or manual trigger via Actions tab
-- **Execution**: Takes approximately 40 seconds
+- **Trigger**: Any push to `main`, PR to `main`, or manual trigger via Actions tab
+- **PR behavior**: Only runs the `check` job (no build or deploy)
+- **Push behavior**: Runs full pipeline — check → build → deploy
+- **Execution**: ~60 seconds for full pipeline
 - **Output**: Site available at `https://dev-arctik.github.io/digital-bouquet/`
 - **Concurrency**: Only one deployment runs at a time; new pushes cancel in-progress deployments
 
