@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { useSearchParams, Link, useNavigate } from 'react-router-dom';
-import { Plus, Flower2, Camera, Eye, X } from 'lucide-react';
+import { Plus, Flower2, Camera, Eye, X, Info } from 'lucide-react';
 
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 import { useToast } from '../components/Toast';
@@ -214,6 +214,14 @@ const ViewerPage: React.FC = () => {
               onViewGarden={() => navigate('/garden')}
               hideShareButton
             />
+
+            {/* About me — links to about page */}
+            <Link
+              to="/about"
+              className="w-full flex items-center justify-center gap-2 border border-rose text-rose text-xs uppercase tracking-widest font-semibold py-3 px-6 rounded-lg font-note hover:bg-rose-light transition-all duration-200"
+            >
+              <Info size={16} className="-mt-0.5" /> About Me
+            </Link>
           </div>
 
           {/* Modal — prompt to save before leaving */}

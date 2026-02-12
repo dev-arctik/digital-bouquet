@@ -9,6 +9,7 @@ import HomePage from './pages/HomePage';
 import BuilderPage from './pages/BuilderPage';
 import ViewerPage from './pages/ViewerPage';
 import GardenPage from './pages/GardenPage';
+import AboutPage from './pages/AboutPage';
 import { Step1 } from './features/builder/Step1';
 import { Step2 } from './features/builder/Step2';
 import { Step3 } from './features/builder/Step3';
@@ -54,6 +55,14 @@ const App: React.FC = () => {
           element={
             <ErrorBoundary>
               <ViewerPage />
+            </ErrorBoundary>
+          }
+        />
+        <Route
+          path="/about"
+          element={
+            <ErrorBoundary>
+              <AboutPage />
             </ErrorBoundary>
           }
         />

@@ -3,7 +3,7 @@
 // Garden icon on the right (links to /garden, only shown if garden has bouquets).
 
 import { Outlet, Link } from 'react-router-dom';
-import { Sprout } from 'lucide-react';
+import { Sprout, Info } from 'lucide-react';
 import { useAppSelector } from '../app/hooks';
 import { selectGardenIsEmpty } from '../features/garden/gardenSlice';
 
@@ -18,16 +18,29 @@ export const Layout: React.FC = () => {
           DigiBouquet
         </Link>
 
-        {/* Garden link — only visible when garden has bouquets */}
-        {!gardenIsEmpty && (
+        {/* Right-side nav links */}
+        <div className="flex items-center gap-3">
+          {/* About link — shows text on desktop always, on mobile only when garden is empty (more room) */}
           <Link
-            to="/garden"
+            to="/about"
             className="uppercase tracking-widest text-xs font-mono text-rose no-underline border-2 border-rose px-3 py-1.5 rounded-lg hover:bg-rose-light transition-colors whitespace-nowrap"
-            aria-label="My Garden"
+            aria-label="About Me"
           >
-            <Sprout size={14} className="inline -mt-0.5" /> <span className="hidden sm:inline">My </span>Garden
+            <Info size={14} className="inline -mt-0.5" />
+            <span className={gardenIsEmpty ? 'inline' : 'hidden sm:inline'}> About Me</span>
           </Link>
-        )}
+
+          {/* Garden link — only visible when garden has bouquets */}
+          {!gardenIsEmpty && (
+            <Link
+              to="/garden"
+              className="uppercase tracking-widest text-xs font-mono text-rose no-underline border-2 border-rose px-3 py-1.5 rounded-lg hover:bg-rose-light transition-colors whitespace-nowrap"
+              aria-label="My Garden"
+            >
+              <Sprout size={14} className="inline -mt-0.5" /> My Garden
+            </Link>
+          )}
+        </div>
       </nav>
 
       {/* Page content */}
