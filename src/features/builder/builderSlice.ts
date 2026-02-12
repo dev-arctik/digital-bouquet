@@ -99,38 +99,15 @@ const builderSlice = createSlice({
       }
     },
 
-    // Swap z-index with the flower one layer above (bring forward)
-    bringToFront(state, action: PayloadAction<string>) {
+    // Move a flower to the top of the stack on click/tap
+    bringToTop(state, action: PayloadAction<string>) {
       const flower = state.placedFlowers.find((f) => f.id === action.payload);
       if (!flower) return;
 
-      // Find the flower with the next-higher z-index
-      const above = state.placedFlowers
-        .filter((f) => f.zIndex > flower.zIndex)
-        .sort((a, b) => a.zIndex - b.zIndex)[0];
-
-      if (above) {
-        const temp = flower.zIndex;
-        flower.zIndex = above.zIndex;
-        above.zIndex = temp;
-      }
-    },
-
-    // Swap z-index with the flower one layer below (send backward)
-    sendToBack(state, action: PayloadAction<string>) {
-      const flower = state.placedFlowers.find((f) => f.id === action.payload);
-      if (!flower) return;
-
-      // Find the flower with the next-lower z-index
-      const below = state.placedFlowers
-        .filter((f) => f.zIndex < flower.zIndex)
-        .sort((a, b) => b.zIndex - a.zIndex)[0];
-
-      if (below) {
-        const temp = flower.zIndex;
-        flower.zIndex = below.zIndex;
-        below.zIndex = temp;
-      }
+      const maxZ = Math.max(...state.placedFlowers.map((f) => f.zIndex));
+      // Already on top — nothing to do
+      if (flower.zIndex === maxZ) return;
+      flower.zIndex = maxZ + 1;
     },
 
     // Set or clear the note
@@ -215,8 +192,7 @@ export const {
   decrementCartItem,
   setPlacedFlowers,
   updateFlowerPosition,
-  bringToFront,
-  sendToBack,
+  bringToTop,
   setNote,
   updateNotePosition,
   setGreenery,

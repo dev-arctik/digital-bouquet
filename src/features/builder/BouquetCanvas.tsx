@@ -2,13 +2,12 @@
 // Renders greenery background, draggable flowers, and the note card
 // within a DndContext. Scales down on mobile to fit the viewport.
 
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { DndContext, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
+import { useEffect, useRef, useCallback, useState } from 'react';
+import { DndContext, PointerSensor, TouchSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { updateFlowerPosition, updateNotePosition } from './builderSlice';
 import { DraggableFlower } from './DraggableFlower';
 import { NoteCard } from './NoteCard';
-import { FlowerControls } from './FlowerControls';
 import {
   GREENERY_OPTIONS,
   CANVAS_WIDTH,
@@ -32,14 +31,17 @@ export const BouquetCanvas: React.FC = () => {
   const note = useAppSelector((state) => state.builder.note);
   const greenery = useAppSelector((state) => state.builder.greenery);
 
-  const [selectedFlowerId, setSelectedFlowerId] = useState<string | null>(null);
-
-  // Require 5px movement before starting a drag — allows clicks to register
+  // Require 5px movement before starting a drag — allows clicks/taps to register
   // for flower selection without being captured as drag events
   const pointerSensor = useSensor(PointerSensor, {
     activationConstraint: { distance: 5 },
   });
-  const sensors = useSensors(pointerSensor);
+  // TouchSensor fallback — PointerSensor alone doesn't reliably capture
+  // touch input on all mobile browsers (especially older Safari/WebView)
+  const touchSensor = useSensor(TouchSensor, {
+    activationConstraint: { distance: 5 },
+  });
+  const sensors = useSensors(pointerSensor, touchSensor);
 
   // Responsive scaling — shrink canvas when viewport is narrower than 800px
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -113,14 +115,6 @@ export const BouquetCanvas: React.FC = () => {
     [dispatch, placedFlowers, note, scale]
   );
 
-  // Deselect flower when clicking the canvas background
-  const handleCanvasClick = () => {
-    setSelectedFlowerId(null);
-  };
-
-  // Find the currently selected flower for FlowerControls positioning
-  const selectedFlower = placedFlowers.find((f) => f.id === selectedFlowerId);
-
   return (
     <div
       ref={wrapperRef}
@@ -138,7 +132,6 @@ export const BouquetCanvas: React.FC = () => {
               transform: `scale(${scale})`,
               transformOrigin: 'top left',
             }}
-            onClick={handleCanvasClick}
           >
           {/* Layer 1: Greenery background (always behind flowers) */}
           {greeneryAsset && greeneryMeta && (
@@ -162,8 +155,6 @@ export const BouquetCanvas: React.FC = () => {
             <DraggableFlower
               key={flower.id}
               flower={flower}
-              isSelected={flower.id === selectedFlowerId}
-              onSelect={setSelectedFlowerId}
             />
           ))}
 
@@ -172,14 +163,6 @@ export const BouquetCanvas: React.FC = () => {
             <NoteCard note={note} zIndex={maxFlowerZ + 1} />
           )}
 
-          {/* Floating z-index controls for the selected flower */}
-          {selectedFlower && (
-            <FlowerControls
-              flowerId={selectedFlower.id}
-              flowerX={selectedFlower.x}
-              flowerY={selectedFlower.y}
-            />
-          )}
           </div>
         </div>
       </DndContext>

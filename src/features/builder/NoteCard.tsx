@@ -29,6 +29,8 @@ export const NoteCard: React.FC<NoteCardProps> = ({ note, zIndex }) => {
     width: getNoteWidth(note.text),
     zIndex,
     transform: dragTranslate ? `${dragTranslate} ${baseRotate}` : baseRotate,
+    // Prevent browser from hijacking touch gestures (scroll/zoom) on draggable elements
+    touchAction: 'none',
   };
 
   return (

@@ -5,6 +5,10 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
   // base path for GitHub Pages — matches the repo name
   base: '/digital-bouquet/',
+  server: {
+    // Allow ngrok tunnel hostname during development
+    allowedHosts: ['.ngrok-free.dev'],
+  },
   plugins: [
     react(),
     tailwindcss(),

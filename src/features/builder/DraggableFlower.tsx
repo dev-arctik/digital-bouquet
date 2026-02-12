@@ -1,18 +1,19 @@
 // DraggableFlower — a single flower on the canvas that can be dragged.
 // Uses @dnd-kit/core's useDraggable hook for positioning.
+// Clicking/tapping a flower brings it to the top of the stack.
 // On mount, animates from canvas center to its random position so users
 // understand the flowers are movable.
 
 import { useState, useEffect } from 'react';
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
+import { useAppDispatch } from '../../app/hooks';
+import { bringToTop } from './builderSlice';
 import type { PlacedFlower } from '../../types';
 import { FLOWERS, FLOWER_SIZE, CANVAS_WIDTH, CANVAS_HEIGHT } from '../../data/flowers';
 
 interface DraggableFlowerProps {
   flower: PlacedFlower;
-  isSelected: boolean;
-  onSelect: (id: string) => void;
 }
 
 // Canvas center point (where flowers animate FROM)
@@ -21,9 +22,8 @@ const CENTER_Y = (CANVAS_HEIGHT - FLOWER_SIZE) / 2;
 
 export const DraggableFlower: React.FC<DraggableFlowerProps> = ({
   flower,
-  isSelected,
-  onSelect,
 }) => {
+  const dispatch = useAppDispatch();
   const { attributes, listeners, setNodeRef, transform, isDragging } =
     useDraggable({ id: flower.id });
 
@@ -56,11 +56,11 @@ export const DraggableFlower: React.FC<DraggableFlowerProps> = ({
     ? CSS.Translate.toString(transform)
     : undefined;
 
-  // Select on click only when not dragging (isDragging stays true through the mouseup)
+  // Bring flower to top on click/tap (skip if it was a drag gesture)
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!isDragging) {
-      onSelect(flower.id);
+      dispatch(bringToTop(flower.id));
     }
   };
 
@@ -74,9 +74,7 @@ export const DraggableFlower: React.FC<DraggableFlowerProps> = ({
       {...listeners}
       {...attributes}
       onClick={handleClick}
-      className={`absolute cursor-grab active:cursor-grabbing ${
-        isSelected ? 'border-2 border-dashed border-rose' : ''
-      }`}
+      className="absolute cursor-grab active:cursor-grabbing"
       style={{
         left: currentX,
         top: currentY,
@@ -84,6 +82,8 @@ export const DraggableFlower: React.FC<DraggableFlowerProps> = ({
         width: FLOWER_SIZE,
         height: FLOWER_SIZE,
         transform: dragTransform,
+        // Prevent browser from hijacking touch gestures (scroll/zoom) on draggable elements
+        touchAction: 'none',
         // Only animate during the initial entrance — manual drags are instant
         transition: isEntering ? 'left 0.6s ease-out, top 0.6s ease-out' : 'none',
         // Lift dragged flower visually above everything
