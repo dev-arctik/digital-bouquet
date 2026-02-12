@@ -6,5 +6,7 @@ import { encodeBouquet } from './encoder';
 
 export function generateShareLink(bouquet: Bouquet): string {
   const encoded = encodeBouquet(bouquet);
-  return `${window.location.origin}/view?d=${encoded}`;
+  // BASE_URL includes trailing slash (e.g. '/digital-bouquet/' or '/')
+  const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+  return `${window.location.origin}${base}/view?d=${encoded}`;
 }
