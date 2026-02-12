@@ -99,7 +99,9 @@ const builderSlice = createSlice({
       }
     },
 
-    // Move a flower to the top of the stack on click/tap
+    // Move a flower to the top of the stack on click/tap.
+    // After promoting, normalize all z-indices to sequential 1..N so they
+    // stay compact and always pass the decoder's range validation on share.
     bringToTop(state, action: PayloadAction<string>) {
       const flower = state.placedFlowers.find((f) => f.id === action.payload);
       if (!flower) return;
@@ -108,6 +110,14 @@ const builderSlice = createSlice({
       // Already on top — nothing to do
       if (flower.zIndex === maxZ) return;
       flower.zIndex = maxZ + 1;
+
+      // Normalize z-indices to 1..N based on relative order to prevent
+      // unbounded growth that would break URL encode/decode round-trips
+      const sorted = [...state.placedFlowers].sort((a, b) => a.zIndex - b.zIndex);
+      sorted.forEach((f, i) => {
+        const placed = state.placedFlowers.find((p) => p.id === f.id);
+        if (placed) placed.zIndex = i + 1;
+      });
     },
 
     // Set or clear the note
