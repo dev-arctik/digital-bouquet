@@ -69,10 +69,8 @@ export const Step3: React.FC = () => {
     return () => window.removeEventListener('resize', updateScale);
   }, []);
 
-  // Don't render anything while redirecting — placed after all hooks
-  if (hasNoFlowers) return null;
-
-  // Stable ID: generated once per mount, so BACK+NEXT doesn't create duplicates
+  // Stable ID: generated once per mount, so BACK+NEXT doesn't create duplicates.
+  // Must be above the early return to satisfy React's hook ordering rules.
   const [bouquetId] = useState(
     () => gardenBouquet?.id ?? builder.editingBouquetId ?? crypto.randomUUID()
   );
@@ -102,6 +100,9 @@ export const Step3: React.FC = () => {
       builder.canvasHeight,
     ]
   );
+
+  // Don't render anything while redirecting — placed after all hooks
+  if (hasNoFlowers) return null;
 
   // Save the current bouquet to the garden (localStorage)
   const handleSaveToGarden = () => {
