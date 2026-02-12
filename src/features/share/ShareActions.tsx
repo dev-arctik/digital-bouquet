@@ -15,6 +15,7 @@ interface ShareActionsProps {
   onSaveToGarden?: () => void;
   isSaved?: boolean;
   onViewGarden?: () => void;  // navigate to garden after saving
+  hideShareButton?: boolean;  // viewer page has its own primary CTA
 }
 
 export const ShareActions: React.FC<ShareActionsProps> = ({
@@ -23,6 +24,7 @@ export const ShareActions: React.FC<ShareActionsProps> = ({
   onSaveToGarden,
   isSaved = false,
   onViewGarden,
+  hideShareButton = false,
 }) => {
   const { showToast } = useToast();
   const [isExporting, setIsExporting] = useState(false);
@@ -75,12 +77,14 @@ export const ShareActions: React.FC<ShareActionsProps> = ({
   return (
     <div className="flex flex-col gap-2 w-full">
       {/* Primary: share — full width, solid coral, most prominent */}
-      <button
-        onClick={handleShare}
-        className="w-full bg-coral text-white text-sm uppercase tracking-widest font-bold py-3 px-6 rounded-lg font-note hover:bg-[#E85A35] hover:shadow-md transition-all duration-200"
-      >
-        <Share2 size={16} className="inline -mt-0.5" /> Share Your Bouquet
-      </button>
+      {!hideShareButton && (
+        <button
+          onClick={handleShare}
+          className="w-full bg-coral text-white text-sm uppercase tracking-widest font-bold py-3 px-6 rounded-lg font-note hover:bg-[#E85A35] hover:shadow-md transition-all duration-200"
+        >
+          <Share2 size={16} className="inline -mt-0.5" /> Share Your Bouquet
+        </button>
+      )}
 
       {/* Secondary: save actions — side by side, smaller, outlined */}
       <div className="flex gap-2 w-full">

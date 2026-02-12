@@ -11,21 +11,22 @@ const BuilderPage: React.FC = () => {
   const hasPlacedFlowers = useAppSelector(
     (state) => state.builder.placedFlowers.length > 0
   );
+  const isSaved = useAppSelector((state) => state.builder.isSavedToGarden);
 
-  // Warn before browser navigation (refresh/close) when unsaved work exists
+  // Warn before browser navigation (refresh/close) only when unsaved work exists
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (hasPlacedFlowers) {
+      if (hasPlacedFlowers && !isSaved) {
         e.preventDefault();
       }
     };
 
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, [hasPlacedFlowers]);
+  }, [hasPlacedFlowers, isSaved]);
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-3 animate-fade-in-up">
+    <div className="max-w-5xl mx-auto px-4 py-3 animate-fade-in-up overflow-hidden flex-1 flex flex-col">
       <Outlet />
     </div>
   );

@@ -74,6 +74,7 @@ export interface BuilderState {
   editingBouquetId: string | null;
   canvasWidth: number;
   canvasHeight: number;
+  isSavedToGarden: boolean; // true after saving — suppresses beforeunload warning
 }
 
 // Redux: garden state (persisted via redux-persist)

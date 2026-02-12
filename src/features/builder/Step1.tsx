@@ -37,13 +37,13 @@ export const Step1: React.FC = () => {
         </p>
       </div>
 
-      {/* Main layout: grid + cart sidebar, centered */}
-      <div className="flex gap-8 justify-center">
-        <div className="flex-1">
+      {/* Main layout: stacked on mobile, side-by-side on desktop */}
+      <div className="flex flex-col md:flex-row gap-6 md:gap-8 justify-center w-full px-4 md:px-0">
+        <div className="w-full md:flex-1 max-w-sm mx-auto md:mx-0">
           <FlowerGrid />
         </div>
 
-        <div className="w-56 shrink-0">
+        <div className="w-full md:w-56 md:shrink-0 max-w-sm mx-auto md:mx-0">
           <Cart onNext={handleNext} hasFlowers={hasFlowers} />
         </div>
       </div>

@@ -14,7 +14,7 @@ export const Layout: React.FC = () => {
     <div className="min-h-screen flex flex-col">
       {/* Navbar — warm rose-light border, no shadow for a flat look */}
       <nav className="flex items-center justify-between px-6 py-4 border-b border-rose-light">
-        <Link to="/" className="font-logo text-4xl text-rose-dark no-underline">
+        <Link to="/" className="font-logo text-3xl sm:text-4xl text-rose-dark no-underline">
           DigiBouquet
         </Link>
 
@@ -22,16 +22,16 @@ export const Layout: React.FC = () => {
         {!gardenIsEmpty && (
           <Link
             to="/garden"
-            className="uppercase tracking-widest text-xs font-mono text-rose no-underline border-2 border-rose px-3 py-1.5 rounded-lg hover:bg-rose-light transition-colors"
+            className="uppercase tracking-widest text-xs font-mono text-rose no-underline border-2 border-rose px-3 py-1.5 rounded-lg hover:bg-rose-light transition-colors whitespace-nowrap"
             aria-label="My Garden"
           >
-            <Sprout size={14} className="inline -mt-0.5" /> My Garden
+            <Sprout size={14} className="inline -mt-0.5" /> <span className="hidden sm:inline">My </span>Garden
           </Link>
         )}
       </nav>
 
       {/* Page content */}
-      <main className="flex-1">
+      <main className="flex-1 flex flex-col">
         <Outlet />
       </main>
     </div>

@@ -33,7 +33,7 @@ export const FlowerTile: React.FC<FlowerTileProps> = ({ flower, disabled }) => {
       <img
         src={flower.asset}
         alt={flower.name}
-        className="w-16 h-16 object-contain"
+        className="w-20 h-20 sm:w-16 sm:h-16 object-contain"
       />
       <span className="text-sm font-note font-medium text-rose-dark">
         {flower.name}
